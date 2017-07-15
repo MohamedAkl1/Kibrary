@@ -72,4 +72,25 @@ public class BookLab {
     public List<Book> getBooks(){
         return mBooks;
     }
+
+    private String loadBook(String name){
+        String[] bookNames;
+        try {
+            bookNames = assetManager.list(SAMPLE_BOOKS);
+            Log.i(TAG,"found "+bookNames.length +" books");
+        }catch (IOException ioe){
+            Log.e(TAG,"Could not list assets",ioe);
+            return null;
+        }
+
+        for(String filename : bookNames){
+            String assetPath = SAMPLE_BOOKS + "/" + filename;
+            Book book = new Book(assetPath);
+            mBooks.add(book);
+            if(filename.equals(name)){
+                return assetPath;
+            }
+        }
+        return null;
+    }
 }

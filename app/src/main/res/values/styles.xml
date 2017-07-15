@@ -8,6 +8,15 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+        <declare-styleable name="MyCustomView">
+
+            <attr name="abc" format="integer"/>
+            <attr name="pqr" format="integer" />
+
+        </declare-styleable>
+
+        <attr name="xyz" format="integer"/>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

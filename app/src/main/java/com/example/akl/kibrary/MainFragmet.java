@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +23,7 @@ public class MainFragmet extends Fragment {
     private TextView mTextView;
     private RecyclerView mRecyclerView;
     private ListAdapter mAdapter;
-    private Book publicBook;
+    private String pathname;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,6 +43,7 @@ public class MainFragmet extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         try {
             updateUI();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ public class MainFragmet extends Fragment {
         public TextView mTextView;
         private Book mBook;
 
-        public BookHolder(View itemView){
+        public BookHolder(View itemView) throws IOException{
             super(itemView);
             mTextView = (TextView)itemView;
             mTextView.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +65,11 @@ public class MainFragmet extends Fragment {
                     fragmento = new BookFragment();
                     Bundle bundle = new Bundle();
                     bundle.putString("BOOK_NAME", (String) mTextView.getText());
+                    try {
+                        bundle.putString("BOOK_PATH", String.valueOf(new BookLab(getContext()).getBook(mTextView.getText().toString())));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     fragmento.setArguments(bundle);
                     fm.beginTransaction().replace(R.id.main_fragment_container,fragmento).addToBackStack(null).commit();
                 }
@@ -77,7 +82,7 @@ public class MainFragmet extends Fragment {
         }
     }
 
-    public class ListAdapter extends RecyclerView.Adapter<BookHolder>{
+    public class ListAdapter extends RecyclerView.Adapter<BookHolder> {
         private List<Book> mBooks;
         public ListAdapter(List<Book> books){
             mBooks = books;
@@ -87,7 +92,11 @@ public class MainFragmet extends Fragment {
         public BookHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
             View view = layoutInflater.inflate(android.R.layout.simple_list_item_1,parent,false);
-            return new BookHolder(view);
+            try {
+                return new BookHolder(view);
+            } catch (IOException e) {
+                return null;
+            }
         }
 
         @Override
@@ -106,7 +115,6 @@ public class MainFragmet extends Fragment {
     private void updateUI() throws IOException {
         BookLab bookLab = BookLab.get(getActivity());
         List<Book> books = bookLab.getBooks();
-
         mAdapter = new ListAdapter(books);
         mRecyclerView.setAdapter(mAdapter);
     }
